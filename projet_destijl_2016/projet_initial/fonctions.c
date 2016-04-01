@@ -200,6 +200,7 @@ void image(void *arg) {
   rt_task_set_periodic(NULL, TM_NOW, 600000000);
   
   while(1){
+  rt_printf("tImage : Activation periodique\n");
   	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
   	d_camera_get_frame(camera,img);
   	rt_mutex_release(&mutexCamera);

@@ -18,7 +18,6 @@ static void d_message_init(DMessage *This) {
     This->data = NULL;
     This->dataType = MESSAGE_TYPE_UNKNOWN;
     This->len = 0;
-
     This->get_data = d_message_get_data;
     This->get_lenght = d_message_get_lenght;
     This->get_type = d_message_get_type;

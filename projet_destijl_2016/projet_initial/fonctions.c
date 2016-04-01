@@ -159,6 +159,13 @@ void deplacer(void *arg) {
         }
     }
 }
+//TODO
+
+void arena(void *arg) {
+
+
+
+}
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     void *msg;

@@ -22,11 +22,13 @@ RT_TASK tMission;
 //Definition des mutex 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
-RT_MUTEX mutexServer;
+
+
 //Nos mutex
 RT_MUTEX mutexCamera;
 RT_MUTEX mutexArena;
 RT_MUTEX mutexRobot;
+RT_MUTEX mutexServer;
 
 
 
@@ -41,6 +43,10 @@ DRobot *robot;
 DMovement *move;
 DServer *serveur;
 DCamera *camera;
+<<<<<<< HEAD
+=======
+
+>>>>>>> d399f2e1fefac4b05e617418ef92918cd16ab743
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial

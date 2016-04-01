@@ -15,10 +15,14 @@ extern RT_TASK tServeur;
 extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
+extern RT_TASK tImage;
 
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexMove;
+extern RT_MUTEX mutexCamera;
+extern RT_MUTEX mutexServeur;
+
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;

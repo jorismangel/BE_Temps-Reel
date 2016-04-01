@@ -182,6 +182,39 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     return err;
 }
 
-//void image(void *arg) {
-//	if (camera = d_new_camera() == NULL) {
-//}
+
+void image(void *arg) {
+	int err;
+	DImage *img=d_new_image();
+	DJpegimage *jpeg=d_new_jpegimage();
+	DMessage *message = d_new_message();
+	
+	/*initialisation de la camera*/
+	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
+	camera = d_new_camera();
+	
+	/*ouverture de la webcam*/
+	d_camera_open(camera);
+	rt_mutex_release(&mutexCamera);
+	
+	rt_printf("tImage : Debut de l'éxecution de periodique à 600ms\n");
+  rt_task_set_periodic(NULL, TM_NOW, 600000000);
+  
+  while(1){
+  	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
+  	d_camera_get_frame(camera,img);
+  	rt_mutex_release(&mutexCamera);
+  	
+  	d_jpegimage_compress(jpeg,img);
+  	
+  	d_message_put_jpeg_image(message,jpeg);
+  	
+  	rt_mutex_acquire(&mutexServer, TM_INFINITE);
+  	if(d_server_send(serveur,message)==-1){
+  		rt_printf("echec envoie image au serveur\n");
+  	}
+  	rt_mutex_release(&mutexServer);
+  	
+  	
+  }
+}

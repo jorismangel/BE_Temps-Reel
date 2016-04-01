@@ -156,6 +156,10 @@ void startTasks() {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    if (err = rt_task_start(&tImage, &image, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
 
 }
 

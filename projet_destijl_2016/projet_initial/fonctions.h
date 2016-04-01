@@ -15,13 +15,10 @@
 extern "C" {
 #endif
         void connecter(void * arg);
-        void communiquer(void *arg);
-        void deplacer(void *arg);
-        void envoyer(void *arg);
-
-        void t_image(void *arg);
-
-        void toto(void *arg);
+        void communiquer(void *arg); 	// recevoir des ordres du moniteur
+        void deplacer(void *arg);	// deplacer le robot
+        void envoyer(void *arg);	// envoyer des messages au moniteur
+        void image(void *arg);		// recuperer les images de la camera
 
 #ifdef	__cplusplus
 }

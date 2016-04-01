@@ -20,6 +20,7 @@ extern "C" {
         void envoyer(void *arg);	// envoyer des messages au moniteur
         void image(void *arg);		// recuperer les images de la camera
 
+
 #ifdef	__cplusplus
 }
 #endif

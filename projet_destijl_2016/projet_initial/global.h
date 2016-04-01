@@ -32,6 +32,7 @@ extern int etatCommRobot;
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
+extern DCamera *camera;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;

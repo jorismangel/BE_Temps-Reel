@@ -33,6 +33,7 @@ extern int etatCommRobot;
 extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
+extern DCamera *camera;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
@@ -40,7 +41,18 @@ extern int PRIORITY_TSERVEUR;
 extern int PRIORITY_TCONNECT;
 extern int PRIORITY_TMOVE;
 extern int PRIORITY_TENVOYER;
+//Nos priorites
+extern int PRIORITY_TWATCHDOG;
+extern int PRIORITY_TCONNECT;
+extern int PRIORITY_TSEND;
+extern int PRIORITY_TRECEIVE;
+extern int PRIORITY_TMOVE;
 extern int PRIORITY_TMISSION;
+extern int PRIORITY_TARENA;
+extern int PRIORITY_TIMAGE;
+extern int PRIORITY_TPOSITION;
+extern int PRIORITY_TBATTERY;
+
 
 #endif	/* GLOBAL_H */
 

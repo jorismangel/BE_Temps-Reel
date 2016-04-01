@@ -2,6 +2,8 @@
 #include "global.h"
 #include "fonctions.h"
 
+//aminata
+
 /**
  * \fn void initStruct(void)
  * \brief Initialisation des structures de l'application (tâches, mutex, 
@@ -84,13 +86,37 @@ void initStruct(void) {
     if (err = rt_task_create(&tenvoyer, NULL, 0, PRIORITY_TENVOYER, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
+    }   
+    //arena
+    if (err = rt_task_create(&tArena, NULL, 0, PRIORITY_TARENA, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
     }
-	 //Creation de la tache tMission
+    //image
+    if (err = rt_task_create(&tImage, NULL, 0, PRIORITY_TIMAGE, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    //position
+    if (err = rt_task_create(&tPosition, NULL, 0, PRIORITY_TPOSITION, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    //watchdog
+    if (err = rt_task_create(&tWatchdog, NULL, 0, PRIORITY_TWATCHDOG, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    //mission
     if (err = rt_task_create(&tMission, NULL, 0, PRIORITY_TMISSION, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-
+    //battery
+    if (err = rt_task_create(&tBattery, NULL, 0, PRIORITY_TBATTERY, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
     /* Creation des files de messages */
     if (err = rt_queue_create(&queueMsgGUI, "toto", MSG_QUEUE_SIZE*sizeof(DMessage), MSG_QUEUE_SIZE, Q_FIFO)){
         rt_printf("Error msg queue create: %s\n", strerror(-err));

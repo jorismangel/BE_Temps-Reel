@@ -92,6 +92,14 @@ void communiquer(void *arg) {
                     move->print(move);
                     rt_mutex_release(&mutexMove);
                     break;
+					 case MESSAGE_TYPE_MISSION:
+                    rt_printf("tserver : Le message reçu %d est une mission\n",
+                            num_msg);
+                    rt_mutex_acquire(&mutexMove, TM_INFINITE);
+                    move->from_message(move, msg);
+                    move->print(move);
+                    rt_mutex_release(&mutexMove);
+                    break;
             }
         }
     }
@@ -159,6 +167,13 @@ void deplacer(void *arg) {
         }
     }
 }
+//TODO
+
+void arena(void *arg) {
+
+
+
+}
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     void *msg;
@@ -176,8 +191,48 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 }
 
 
-void mission(void * arg) {
-     DMission *mission = d_new_message();
+void image(void *arg) {
+	if (camera = d_new_camera() == NULL) {
 
-    rt_printf("tserver : Début de l'exécution de serveur\n");
 }
+
+
+void mission(void * arg) {
+    //instanciation et initialisation de la mission 
+	 DMission *mission = d_new_mission();
+
+    rt_printf("tserver : Début de l'exécution du thread tMission\n");
+	
+	 //On recupere les informations du message de mission recu
+	 d_mission_from_message(*mission, *message)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

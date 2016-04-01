@@ -14,11 +14,22 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
-        void connecter (void * arg);
-        void communiquer(void *arg);
-        void deplacer(void *arg);
-        void envoyer(void *arg);
-        void mission(void *arg);		  
+
+	  
+        void connecter(void * arg);
+        void communiquer(void *arg); 	// recevoir des ordres du moniteur
+        void deplacer(void *arg);	// deplacer le robot
+        void envoyer(void *arg);	// envoyer des messages au moniteur
+
+        //Nos threads supplementaires 
+        //void receive(void *arg); equivaut au thread communiquer du projet initial
+        void watchdog(void *arg);
+        void position(void *arg);
+        void arena(void *arg);
+        void image(void *arg);		// recuperer les images de la camera
+        void battery(void *arg);
+        void mission(void *arg);	
+        
 #ifdef	__cplusplus
 }
 #endif

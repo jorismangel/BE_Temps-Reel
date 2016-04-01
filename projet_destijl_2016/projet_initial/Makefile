@@ -13,6 +13,7 @@ main: $(OBJ)
 
 
 fonctions.o: fonctions.c dmessage.o fonctions.h 
+
 	$(CC) -g $(CFLAGS)  -c fonctions.c -o fonctions.o
 
 
@@ -26,6 +27,7 @@ main.o: main.c global.h fonctions.h
 
 dmessage.o: ../lib_destijl/source/dmessage.c ../lib_destijl/headers/dmessage.h ../lib_destijl/headers/dtools.h  
 	cd ../lib_destijl/source; echo "entering source"; \
+
 	$(CC) -g $(CFLAGS)  -c *.c
 	cd ..
 

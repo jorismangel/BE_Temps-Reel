@@ -46,12 +46,12 @@ DCamera *camera;
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial
-/*int PRIORITY_TSERVEUR = 30;
-int PRIORITY_TCONNECT = 20;
-int PRIORITY_TMOVE = 10;
+int PRIORITY_TSERVEUR = 30;
+//int PRIORITY_TCONNECT = 20;
+//int PRIORITY_TMOVE = 10;
 int PRIORITY_TENVOYER = 25;
-int PRIORITY_TCAMERA = 10;*/
-
+int PRIORITY_TCAMERA = 10;
+ int PRIORITY_TWATCHDOG= 99;
 //Nos constantes de priorite
 int PRIORITY_TCONNECT = 80;
 int PRIORITY_TSEND= 70;

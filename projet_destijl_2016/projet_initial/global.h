@@ -21,7 +21,7 @@ extern RT_TASK tImage;
 extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexCamera;
-extern RT_MUTEX mutexServeur;
+extern RT_MUTEX mutexServer;
 
 
 /* @descripteurs des sempahore */

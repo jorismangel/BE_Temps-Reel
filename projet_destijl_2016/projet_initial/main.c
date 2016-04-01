@@ -85,6 +85,11 @@ void initStruct(void) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+	 //Creation de la tache tMission
+    if (err = rt_task_create(&tMission, NULL, 0, PRIORITY_TMISSION, 0)) {
+        rt_printf("Error task create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
 
     /* Creation des files de messages */
     if (err = rt_queue_create(&queueMsgGUI, "toto", MSG_QUEUE_SIZE*sizeof(DMessage), MSG_QUEUE_SIZE, Q_FIFO)){
@@ -113,6 +118,11 @@ void startTasks() {
         exit(EXIT_FAILURE);
     }
     if (err = rt_task_start(&tenvoyer, &envoyer, NULL)) {
+        rt_printf("Error task start: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+	 
+	 if (err = rt_task_start(&tMission, &mission, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }

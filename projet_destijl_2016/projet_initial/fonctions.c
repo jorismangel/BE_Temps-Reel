@@ -174,3 +174,10 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
     return err;
 }
+
+
+void mission(void * arg) {
+     DMission *mission = d_new_message();
+
+    rt_printf("tserver : Début de l'exécution de serveur\n");
+}

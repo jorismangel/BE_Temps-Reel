@@ -12,12 +12,16 @@ RT_TASK tServeur;
 RT_TASK tconnect;
 RT_TASK tmove;
 RT_TASK tenvoyer;
+<<<<<<< HEAD
 RT_TASK tWatchdog;
 RT_TASK tPosition;
 RT_TASK tBattery;
 RT_TASK tArena;
 RT_TASK tImage;
 RT_TASK tMission;
+=======
+RT_TASK tcamera;
+>>>>>>> 5ae3c28f41c0fd0e379ec8a66c21fef28e77d615
 
 //Definition des mutex 
 RT_MUTEX mutexEtat;
@@ -47,6 +51,7 @@ int MSG_QUEUE_SIZE = 10;
 int PRIORITY_TCONNECT = 20;
 int PRIORITY_TMOVE = 10;
 int PRIORITY_TENVOYER = 25;
+<<<<<<< HEAD
 int PRIORITY_TCAMERA = 10;*/
 
 //Nos valeurs
@@ -62,3 +67,6 @@ int PRIORITY_TPOSITION = 60;
 int PRIORITY_TBATTERY = 50;
 
 
+=======
+int PRIORITY_TCAMERA = 10;
+>>>>>>> 5ae3c28f41c0fd0e379ec8a66c21fef28e77d615

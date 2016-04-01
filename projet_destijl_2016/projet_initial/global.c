@@ -40,7 +40,7 @@ int etatCommRobot = 1;
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
-
+Dcamera *camera;
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial

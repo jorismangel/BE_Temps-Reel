@@ -181,3 +181,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
     return err;
 }
+
+void image(void *arg) {
+	if (camera = d_new_camera() == NULL) {
+}

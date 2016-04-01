@@ -45,7 +45,7 @@ int main(int argc, char**argv) {
     initStruct();
     startTasks();
     pause();
-    //deleteTasks();
+    deleteTasks();
 
     return 0;
 }

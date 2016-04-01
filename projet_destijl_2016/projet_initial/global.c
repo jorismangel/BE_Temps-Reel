@@ -15,6 +15,8 @@ RT_TASK tcamera;
 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
+RT_MUTEX mutexCamera;
+RT_MUTEX mutexServeur;
 
 RT_SEM semConnecterRobot;
 
@@ -25,7 +27,8 @@ int etatCommRobot = 1;
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
-Dcamera *camera;
+DCamera *camera;
+
 
 int MSG_QUEUE_SIZE = 10;
 

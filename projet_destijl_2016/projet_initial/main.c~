@@ -89,32 +89,32 @@ void initStruct(void) {
     }
    
     //arena
-    if (err = rt_task_create(&tarena, NULL, 0, PRIORITY_TARENA, 0)) {
+    if (err = rt_task_create(&tArena, NULL, 0, PRIORITY_TARENA, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     //image
-    if (err = rt_task_create(&tImage, NULL, 0, PRIORITY_TARENA, 0)) {
+    if (err = rt_task_create(&tImage, NULL, 0, PRIORITY_TIMAGE, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     //position
-    if (err = rt_task_create(&tposition, NULL, 0, PRIORITY_TPOSITION, 0)) {
+    if (err = rt_task_create(&tPosition, NULL, 0, PRIORITY_TPOSITION, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     //watchdog
-    if (err = rt_task_create(&twatchdog, NULL, 0, PRIORITY_TWATCHDOG, 0)) {
+    if (err = rt_task_create(&tWatchdog, NULL, 0, PRIORITY_TWATCHDOG, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     //mission
-    if (err = rt_task_create(&tmission, NULL, 0, PRIORITY_TMISSION, 0)) {
+    if (err = rt_task_create(&tMission, NULL, 0, PRIORITY_TMISSION, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
     //battery
-    if (err = rt_task_create(&tbattery, NULL, 0, PRIORITY_TBATTERY, 0)) {
+    if (err = rt_task_create(&tBattery, NULL, 0, PRIORITY_TBATTERY, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }

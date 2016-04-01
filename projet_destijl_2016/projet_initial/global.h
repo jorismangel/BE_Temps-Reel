@@ -16,12 +16,19 @@ extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
 extern RT_TASK tImage;
+extern RT_TASK tWatchdog;
+extern RT_TASK tPosition;
+extern RT_TASK tBattery;
+extern RT_TASK tArena;
+extern RT_TASK tImage;
+extern RT_TASK tMission;
+
 
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexCamera;
-extern RT_MUTEX mutexServeur;
+extern RT_MUTEX mutexServer;
 
 
 /* @descripteurs des sempahore */

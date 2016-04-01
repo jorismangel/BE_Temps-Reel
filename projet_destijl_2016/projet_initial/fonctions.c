@@ -95,10 +95,10 @@ void communiquer(void *arg) {
 					 case MESSAGE_TYPE_MISSION:
                     rt_printf("tserver : Le message reçu %d est une mission\n",
                             num_msg);
-                    rt_mutex_acquire(&mutexMove, TM_INFINITE);
-                    move->from_message(move, msg);
-                    move->print(move);
-                    rt_mutex_release(&mutexMove);
+    					  //instanciation et initialisation de la mission 
+	 					  DMission *mission = d_new_mission();
+						  //On recupere les informations du message de mission recu
+						  d_mission_from_message(mission, msg);
                     break;
             }
         }
@@ -192,19 +192,49 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
 
 void image(void *arg) {
+
 	if (camera = d_new_camera() == NULL) {
+	int err;
+	DImage *img=d_new_image();
+	DJpegimage *jpeg=d_new_jpegimage();
+	DMessage *message = d_new_message();
+	
+	/*initialisation de la camera*/
+	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
+	camera = d_new_camera();
+	
+	/*ouverture de la webcam*/
+	d_camera_open(camera);
+	rt_mutex_release(&mutexCamera);
+	
+	rt_printf("tImage : Debut de l'éxecution de periodique à 600ms\n");
+  rt_task_set_periodic(NULL, TM_NOW, 600000000);
+  
+  while(1){
+  	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
+  	d_camera_get_frame(camera,img);
+  	rt_mutex_release(&mutexCamera);
+  	
+  	d_jpegimage_compress(jpeg,img);
+  	
+  	d_message_put_jpeg_image(message,jpeg);
+  	
+  	rt_mutex_acquire(&mutexServer, TM_INFINITE);
+  	if(d_server_send(serveur,message)==-1){
+  		rt_printf("echec envoie image au serveur\n");
+  	}
+  	rt_mutex_release(&mutexServer);
+  }
 
 }
 
 
 void mission(void * arg) {
-    //instanciation et initialisation de la mission 
-	 DMission *mission = d_new_mission();
+
 
     rt_printf("tserver : Début de l'exécution du thread tMission\n");
 	
-	 //On recupere les informations du message de mission recu
-	 d_mission_from_message(*mission, *message)
+	 
 }
 
 

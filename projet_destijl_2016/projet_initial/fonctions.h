@@ -19,7 +19,7 @@ extern "C" {
         void deplacer(void *arg);
         void envoyer(void *arg);
 
-        void t_image(void *arg);
+        void image(void *arg);
 
         void toto(void *arg);
 

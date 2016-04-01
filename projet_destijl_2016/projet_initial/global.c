@@ -7,17 +7,32 @@
 
 #include "global.h"
 
+//Definition des taches 
 RT_TASK tServeur;
 RT_TASK tconnect;
 RT_TASK tmove;
 RT_TASK tenvoyer;
-RT_TASK tcamera;
+RT_TASK tWatchdog;
+RT_TASK tPosition;
+RT_TASK tBattery;
+RT_TASK tArena;
+RT_TASK tImage;
+RT_TASK tMission;
 
+//Definition des mutex 
 RT_MUTEX mutexEtat;
 RT_MUTEX mutexMove;
-RT_MUTEX mutexCamera;
-RT_MUTEX mutexServeur;
 
+
+//Nos mutex
+RT_MUTEX mutexCamera;
+RT_MUTEX mutexArena;
+RT_MUTEX mutexRobot;
+RT_MUTEX mutexServer;
+
+
+
+//Definition des mutex
 RT_SEM semConnecterRobot;
 
 RT_QUEUE queueMsgGUI;
@@ -31,9 +46,22 @@ DCamera *camera;
 
 
 int MSG_QUEUE_SIZE = 10;
-
-int PRIORITY_TSERVEUR = 30;
+//Valeur du projet initial
+/*int PRIORITY_TSERVEUR = 30;
 int PRIORITY_TCONNECT = 20;
 int PRIORITY_TMOVE = 10;
 int PRIORITY_TENVOYER = 25;
-int PRIORITY_TCAMERA = 10;
+int PRIORITY_TCAMERA = 10;*/
+
+//Nos constantes de priorite
+int PRIORITY_TCONNECT = 80;
+int PRIORITY_TSEND= 70;
+int PRIORITY_TRECEIVE = 70;
+int PRIORITY_TMOVE = 60;
+int PRIORITY_TMISSION = 60;
+int PRIORITY_TARENA = 60;
+int PRIORITY_TIMAGE = 60;
+int PRIORITY_TPOSITION = 60;
+int PRIORITY_TBATTERY = 50;
+
+

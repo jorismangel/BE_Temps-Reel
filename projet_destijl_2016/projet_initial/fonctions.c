@@ -159,6 +159,13 @@ void deplacer(void *arg) {
         }
     }
 }
+//TODO
+
+void arena(void *arg) {
+
+
+
+}
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     void *msg;
@@ -201,11 +208,11 @@ void image(void *arg) {
   	
   	d_message_put_jpeg_image(message,jpeg);
   	
-  	rt_mutex_acquire(&mutexServeur, TM_INFINITE);
+  	rt_mutex_acquire(&mutexServer, TM_INFINITE);
   	if(d_server_send(serveur,message)==-1){
   		rt_printf("echec envoie image au serveur\n");
   	}
-  	rt_mutex_release(&mutexServeur);
+  	rt_mutex_release(&mutexServer);
   	
   	
   }

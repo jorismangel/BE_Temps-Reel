@@ -67,7 +67,7 @@ void initStruct(void) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-    if (err = rt_mutex_create(&mutexServeur, NULL)) {
+    if (err = rt_mutex_create(&mutexServer, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }

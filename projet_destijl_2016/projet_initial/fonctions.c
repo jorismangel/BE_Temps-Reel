@@ -96,7 +96,7 @@ void communiquer(void *arg) {
                     rt_printf("tserver : Le message reçu %d est une mission\n",
                             num_msg);
     					  //instanciation et initialisation de la mission 
-	 					  DMission *mission = d_new_mission();
+	 					  mission = d_new_mission();
 						  //On recupere les informations du message de mission recu
 						  d_mission_from_message(mission, msg);
                     break;
@@ -231,10 +231,42 @@ void image(void *arg) {
 
 void mission(void * arg) {
 
+	 int id =0;
+	 DPosition *position;
+    int gauche;
+    int droite;
+	 int var = 0;
+	 DMessage* message;
 
-    rt_printf("tserver : Début de l'exécution du thread tMission\n");
-	
+	 rt_printf("tserver : Début de l'exécution du thread tMission\n");
 	 
+	 //Je recupere le numero de la mission
+	 id = d_mission_get_id(mission); 
+	 //Je recupere la position a atteindre
+	 d_mission_get_position(mission, position);
+	 while (position != (d_image_compute_robot_position(DImage *This, DArena *arena))) {
+		while (position->orientation != mission->orientation){
+			 //On rotate
+			 gauche = MOTEUR_AVANT_LENT;
+			 droite = MOTEUR_STOP;
+			 robot->set_motors(robot, gauche, droite);
+		}
+		//On avance
+		gauche = MOTEUR_AVANT_LENT;
+		droite = MOTEUR_AVANT_LENT;
+		robot->set_motors(robot, gauche, droite);
+	 }
+	 //On s'arrete
+	 gauche = MOTEUR_STOP;
+	 droite = MOTEUR_STOP;
+	 robot->set_motors(robot, gauche, droite);
+
+	 //Arrive a destination, envoie message de mission terminee
+	 rt_printf("Nous sommes arrives a destination\n");
+	 
+	 message = d_new_message(void);
+	 d_message_mission_terminate(message, id);
+	 var = d_server_send(serveur, message);
 }
 
 

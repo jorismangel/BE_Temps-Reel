@@ -182,6 +182,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
     return err;
 }
 
+
 void image(void *arg) {
 	int err;
 	DImage *img=d_new_image();

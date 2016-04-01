@@ -44,7 +44,6 @@ DMovement *move;
 DServer *serveur;
 DCamera *camera;
 
-
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial
 int PRIORITY_TSERVEUR = 30;

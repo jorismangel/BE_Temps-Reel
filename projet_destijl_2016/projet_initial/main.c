@@ -79,7 +79,7 @@ void initStruct(void) {
     }
 
     /* Creation des taches */
-    if (err = rt_task_create(&tServer, NULL, 0, PRIORITY_TSERVEUR, 0)) {
+    if (err = rt_task_create(&tServeur, NULL, 0, PRIORITY_TSERVEUR, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }

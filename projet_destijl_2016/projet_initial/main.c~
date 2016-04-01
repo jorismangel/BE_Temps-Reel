@@ -67,11 +67,7 @@ void initStruct(void) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
-<<<<<<< HEAD
-    if (err = rt_mutex_create(&mutexServeur, NULL)) {
-=======
     if (err = rt_mutex_create(&mutexServer, NULL)) {
->>>>>>> 70267ed722a2f66ad87b702dd5e065085f50e62b
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
@@ -83,7 +79,7 @@ void initStruct(void) {
     }
 
     /* Creation des taches */
-    if (err = rt_task_create(&tServeur, NULL, 0, PRIORITY_TSERVEUR, 0)) {
+    if (err = rt_task_create(&tServer, NULL, 0, PRIORITY_TSERVEUR, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
@@ -100,11 +96,7 @@ void initStruct(void) {
         exit(EXIT_FAILURE);
     }
    
-<<<<<<< HEAD
 /*    //arena
-=======
-    //arena
->>>>>>> 70267ed722a2f66ad87b702dd5e065085f50e62b
     if (err = rt_task_create(&tArena, NULL, 0, PRIORITY_TARENA, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);

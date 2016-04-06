@@ -31,6 +31,7 @@ extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexCamera;
 extern RT_MUTEX mutexServer;
+extern RT_MUTEX mutexMission;
 
 
 /* @descripteurs des sempahore */
@@ -47,6 +48,8 @@ extern DRobot *robot;
 extern DMovement *move;
 extern DCamera *camera;
 extern DMission *mission;
+extern DImage *img;
+extern DArena *arena;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;

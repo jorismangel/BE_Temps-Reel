@@ -1,4 +1,5 @@
 #include "fonctions.h"
+#include <math.h>
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
 
@@ -99,7 +100,7 @@ void communiquer(void *arg) {
 	 					  mission = d_new_mission();
 						  //On recupere les informations du message de mission recu
 						  d_mission_from_message(mission, msg);
-						  debloque mutex
+						  rt_mutex_release(&mutexMission);
                     break;
             }
         }
@@ -170,7 +171,7 @@ void deplacer(void *arg) {
 }
 //TODO
 
-void arena(void *arg) {
+void detectArena(void *arg) {
 
 
 
@@ -209,7 +210,7 @@ void image(void *arg) {
 	rt_mutex_release(&mutexCamera);
 	
 	rt_printf("tImage : Debut de l'éxecution de periodique à 600ms\n");
-  rt_task_set_periodic(NULL, TM_NOW, 600000000);
+   rt_task_set_periodic(NULL, TM_NOW, 600000000);
   
   while(1){
   	rt_printf("tImage : Activation periodique\n");
@@ -232,49 +233,62 @@ void image(void *arg) {
 
 
 
-void mission(void * arg) {
+void mission_fct(void * arg) {
 
 	 int id =0;
-	 DPosition *position;
-    int gauche;
-    int droite;
-	 int var = 0;
-	 DMessage* message;
+	 DPosition *positionActuelle;
+	 DPosition *positionVoulue;
+	 int angle = 0;
+	 int direction = 0; //Sens horaire
+	 int range = 0; 
+	 int status = 0; 
+	 DMessage* message = d_new_message();
 	 
 	 while(1){
-	 bloque mutex
+	 rt_mutex_acquire(&mutexMission, TM_INFINITE);
 
 	 rt_printf("tserver : Début de l'exécution du thread tMission\n");
 	 
 	 //Je recupere le numero de la mission
 	 id = d_mission_get_id(mission); 
+
 	 //Je recupere la position a atteindre
-	 d_mission_get_position(mission, position);
-	 while (position != (d_image_compute_robot_position(DImage *This, DArena *arena))) {
-		while (position->orientation != mission->orientation){
-			 //On rotate
-			 gauche = MOTEUR_AVANT_LENT;
-			 droite = MOTEUR_STOP;
-			 robot->set_motors(robot, gauche, droite);
-		}
-		//On avance
-		gauche = MOTEUR_AVANT_LENT;
-		droite = MOTEUR_AVANT_LENT;
-		robot->set_motors(robot, gauche, droite);
+	 d_mission_get_position(mission, positionVoulue);
+	 //Je recupere la position actuelle
+	 positionActuelle = d_image_compute_robot_position(img,arena);
+	
+	 //Je calcule les écarts de position pour le futur deplacement
+	 angle = positionVoulue->orientation - positionActuelle->orientation;
+	 range = sqrt(pow(positionVoulue->x - positionActuelle->x, 2) + pow(positionVoulue->y - positionActuelle->y, 2));
+	 
+	 //Maintenant on rotate pour s'aligner avec la destination
+	 status = d_robot_turn(robot,angle,direction);
+	 if(status ==STATUS_OK)
+	 {
+		printf("Turn ok\n");
 	 }
-	 //On s'arrete
-	 gauche = MOTEUR_STOP;
-	 droite = MOTEUR_STOP;
-	 robot->set_motors(robot, gauche, droite);
+	 else
+	 {
+		printf("Error Turn\n");
+	 }
+	 //Puis on avance pour arriver à destination
+	 status = d_robot_move(robot,range);
+	 if(status ==STATUS_OK)
+	 {
+		printf("Move ok\n");
+	 }
+	 else
+	 {
+		printf("Error Move\n");
+	 }
 
 	 //Arrive a destination, envoie message de mission terminee
 	 rt_printf("Nous sommes arrives a destination\n");
-	 
-	 message = d_new_message();
-	 d_message_mission_terminate(message, id);
-	 var = d_server_send(serveur, message);
+	 //On informe de la fin de la mission en envoyant un message 
+	 d_message_mission_terminate(message,id);
+	 status = d_server_send(serveur,message);
 
-
+	 //On garde le mutex bloquant, il sera debloque que lors de la reception d'une nouvelle demande de mission
 }
 }
 

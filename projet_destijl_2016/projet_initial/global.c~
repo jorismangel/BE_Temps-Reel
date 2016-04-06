@@ -47,6 +47,8 @@ DMovement *move;
 DServer *serveur;
 DCamera *camera;
 DMission *mission;
+DArena *arena;
+DImage *img;
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial
@@ -65,5 +67,5 @@ int PRIORITY_TARENA = 60;
 int PRIORITY_TIMAGE = 60;
 int PRIORITY_TPOSITION = 60;
 int PRIORITY_TBATTERY = 50;
- int PRIORITY_TWATCHDOG= 99;
+int PRIORITY_TWATCHDOG= 99;
 

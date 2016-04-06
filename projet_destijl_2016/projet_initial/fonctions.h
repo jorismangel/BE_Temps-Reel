@@ -25,10 +25,10 @@ extern "C" {
         //void receive(void *arg); equivaut au thread communiquer du projet initial
         void watchdog(void *arg);
         void position(void *arg);
-        void arena(void *arg);
+        void detectArena(void *arg);
         void image(void *arg);		// recuperer les images de la camera
         void battery(void *arg);
-        void mission(void *arg);	
+        void mission_fct(void *arg);	
         
 #ifdef	__cplusplus
 }

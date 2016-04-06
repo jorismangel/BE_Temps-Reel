@@ -18,6 +18,7 @@ void envoyer(void * arg) {
     }
 }
 
+
 void connecter(void * arg) {
     int status;
     DMessage *message;

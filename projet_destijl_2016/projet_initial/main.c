@@ -142,6 +142,7 @@ void initStruct(void) {
     robot = d_new_robot();
     move = d_new_movement();
     serveur = d_new_server();
+    img=d_new_image();
 }
 
 void startTasks() {

@@ -26,29 +26,38 @@ void connecter(void * arg) {
     rt_printf("tconnect : Debut de l'exécution de tconnect\n");
 
     while (1) {
+	// Attente de l'acquisition du semaphore semConnecterRobot
         rt_printf("tconnect : Attente du sémarphore semConnecterRobot\n");
         rt_sem_p(&semConnecterRobot, TM_INFINITE);
+
+	// Ouverture de la communication avec le robot
         rt_printf("tconnect : Ouverture de la communication avec le robot\n");
         status = robot->open_device(robot);
 
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-        etatCommRobot = status;
-        rt_mutex_release(&mutexEtat);
+	// Mise a jour de la variable etatCommRobot
+	rt_mutex_acquire(&mutexEtat, TM_INFINITE); // récupérer le mutex mutexEtat
+	etatCommRobot = status; // màj avec le status
+	rt_mutex_release(&mutexEtat); // libérer le mutex mutexEtat
 
-        if (status == STATUS_OK) {
-            status = robot->start_insecurely(robot);
-            if (status == STATUS_OK){
-		// Connexion au robot ok
-                rt_printf("tconnect : Robot démarré\n");
+        // Si le status est OK, on démarre le robot
+	if (status == STATUS_OK) {
+            	
+		status = robot->start_insecurely(robot); // sans watchdog
+		//status = robot->start(robot); // quand watchgod ok
+           	
+		// Si le status est OK, on démarre le watchdog et l'aquisition de la battery
+		if (status == STATUS_OK){
 
-		// Start aquisition de la batterie : envoi de l'évenement
-		rt_printf("tconnect : Libération du semaphore semStartGetBattery\n");
-		rt_sem_v(&semStartGetBattery);
+		        rt_printf("tconnect : Robot démarré\n");
 
-		// Start watchdof : envoi de l'évenement
-		rt_printf("tconnect : Libération du semaphore semStartWatchdog\n");
-		rt_sem_v(&semStartWatchdog);
-            }
+			// Start aquisition de la batterie : envoi de l'évenement
+			rt_printf("tconnect : Libération du semaphore semStartGetBattery\n");
+			rt_sem_v(&semStartGetBattery);
+
+			// Start watchdof : envoi de l'évenement
+			rt_printf("tconnect : Libération du semaphore semStartWatchdog\n");
+			rt_sem_v(&semStartWatchdog);
+            	}
         }
 
         message = d_new_message();

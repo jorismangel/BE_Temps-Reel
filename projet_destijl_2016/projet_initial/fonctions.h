@@ -26,6 +26,8 @@ extern "C" {
         void arena(void *arg);
         void image(void *arg);		// recuperer les images de la camera
         void battery(void *arg);
+
+	void test_com_robot(const char* fct);
         
 #ifdef	__cplusplus
 }

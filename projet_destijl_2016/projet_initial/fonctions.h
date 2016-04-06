@@ -14,6 +14,8 @@
 #ifdef	__cplusplus
 extern "C" {
 #endif
+
+	  
         void connecter(void * arg);
         void communiquer(void *arg); 	// recevoir des ordres du moniteur
         void deplacer(void *arg);	// deplacer le robot
@@ -23,10 +25,13 @@ extern "C" {
         //void receive(void *arg); equivaut au thread communiquer du projet initial
         void watchdog(void *arg);
         void position(void *arg);
-        void detect_arena(void *arg);
+
+        void detectArena(void *arg);
         void image(void *arg);		// recuperer les images de la camera
         void battery(void *arg);
 				void test_com_robot(const char* fct);
+				void mission_fct(void *arg);
+
 #ifdef	__cplusplus
 }
 #endif

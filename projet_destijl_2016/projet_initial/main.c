@@ -53,6 +53,7 @@ int main(int argc, char**argv) {
 }
 
 void initStruct(void) {
+
     int err;
     /* Creation des mutex */
     if (err = rt_mutex_create(&mutexEtat, NULL)) {
@@ -83,6 +84,13 @@ void initStruct(void) {
         exit(EXIT_FAILURE);
     }
     
+    // mutexMission
+	if (err = rt_mutex_create(&mutexMission, NULL)) {
+		rt_printf("Error mutex create: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
+
+    
     /* Creation du semaphore */
     if (err = rt_sem_create(&semConnecterRobot, NULL, 0, S_FIFO)) {
         rt_printf("Error semaphore create: %s\n", strerror(-err));
@@ -97,6 +105,19 @@ void initStruct(void) {
         rt_printf("Error semaphore create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    
+    if (err = rt_sem_create(&semStartGetBattery, NULL, 0, S_FIFO)) {
+		rt_printf("Error semaphore create semStartGetBattery: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+		}
+	
+		// semStartWatchdog
+		if (err = rt_sem_create(&semStartWatchdog, NULL, 0, S_FIFO)) {
+			rt_printf("Error semaphore create semStartWatchdog: %s\n", strerror(-err));
+			exit(EXIT_FAILURE);
+		}
+		
+		
     /* Creation des taches */
     if (err = rt_task_create(&tServeur, NULL, 0, PRIORITY_TSERVEUR, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
@@ -185,16 +206,31 @@ void startTasks() {
         exit(EXIT_FAILURE);
     }
     
-    if (err = rt_task_start(&tArena, &detect_arena, NULL)) {
+    if (err = rt_task_start(&tArena, &detectArena, NULL)) {
         rt_printf("Error task start: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    
+    	// tBattery
+	if (err = rt_task_start(&tBattery, &battery, NULL)) {
+		rt_printf("Error task start tBattery: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
+	
+	// tMission
+	//if (err = rt_task_start(&tMission, &mission, NULL)) {
+ 	//	rt_printf("Error task start: %s\n", strerror(-err));
+        //	exit(EXIT_FAILURE);
+    	//}	
 
 }
 
+
 void deleteTasks() {
-    rt_task_delete(&tServeur);
-    rt_task_delete(&tconnect);
-    rt_task_delete(&tmove);
-    rt_task_delete(&tImage);
+    	rt_task_delete(&tServeur);
+    	rt_task_delete(&tconnect);
+    	rt_task_delete(&tmove);
+    	rt_task_delete(&tImage);
+			rt_task_delete(&tMission);
+    	rt_task_delete(&tBattery);
 }

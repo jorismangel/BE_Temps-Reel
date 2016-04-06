@@ -44,6 +44,7 @@ DRobot *robot;
 DMovement *move;
 DServer *serveur;
 DCamera *camera;
+DImage * img;
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial

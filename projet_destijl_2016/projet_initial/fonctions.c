@@ -234,8 +234,9 @@ void image(void *arg) {
   	d_camera_get_frame(camera,img);
   	rt_mutex_release(&mutexCamera);
   	
+  	rt_mutex_acquire(&mutexImage, TM_INFINITE);
   	d_jpegimage_compress(jpeg,img);
-  	
+  	rt_mutex_release(&mutexImage);
   	d_message_put_jpeg_image(message,jpeg);
   	
   	rt_mutex_acquire(&mutexServer, TM_INFINITE);

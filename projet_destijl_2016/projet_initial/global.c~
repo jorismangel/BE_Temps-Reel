@@ -32,11 +32,13 @@ RT_MUTEX mutexArena;
 RT_MUTEX mutexRobot;
 RT_MUTEX mutexServer;
 RT_MUTEX mutexMission;
+RT_MUTEX mutexImage;
 
 
-
-//Definition des mutex
+//Definition des semaphores
 RT_SEM semConnecterRobot;
+RT_SEM semStartGetBattery;
+RT_SEM semStartWatchdog;
 
 RT_QUEUE queueMsgGUI;
 
@@ -49,6 +51,7 @@ DCamera *camera;
 DMission *mission;
 DArena *arena;
 DImage *img;
+
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial

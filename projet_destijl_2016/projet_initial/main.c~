@@ -59,6 +59,12 @@ void initStruct(void) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
     }
+    
+    if (err = rt_mutex_create(&mutexImage, NULL)) {
+        rt_printf("Error mutex create: %s\n", strerror(-err));
+        exit(EXIT_FAILURE);
+    }
+    
     if (err = rt_mutex_create(&mutexMove, NULL)) {
         rt_printf("Error mutex create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
@@ -98,7 +104,7 @@ void initStruct(void) {
     if (err = rt_task_create(&tenvoyer, NULL, 0, PRIORITY_TENVOYER, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
         exit(EXIT_FAILURE);
-    }   
+    }  
     //arena
     if (err = rt_task_create(&tArena, NULL, 0, PRIORITY_TARENA, 0)) {
         rt_printf("Error task create: %s\n", strerror(-err));
@@ -139,6 +145,7 @@ void initStruct(void) {
     robot = d_new_robot();
     move = d_new_movement();
     serveur = d_new_server();
+    img=d_new_image();
 }
 
 void startTasks() {
@@ -178,4 +185,5 @@ void deleteTasks() {
     rt_task_delete(&tconnect);
     rt_task_delete(&tmove);
     rt_task_delete(&tImage);
+	 rt_task_delete(&tMission);
 }

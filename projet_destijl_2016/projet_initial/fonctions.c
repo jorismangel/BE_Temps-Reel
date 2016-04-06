@@ -19,6 +19,7 @@ void envoyer(void * arg) {
     }
 }
 
+
 void connecter(void * arg) {
     int status;
     DMessage *message;
@@ -26,20 +27,38 @@ void connecter(void * arg) {
     rt_printf("tconnect : Debut de l'exécution de tconnect\n");
 
     while (1) {
+	// Attente de l'acquisition du semaphore semConnecterRobot
         rt_printf("tconnect : Attente du sémarphore semConnecterRobot\n");
         rt_sem_p(&semConnecterRobot, TM_INFINITE);
+
+	// Ouverture de la communication avec le robot
         rt_printf("tconnect : Ouverture de la communication avec le robot\n");
         status = robot->open_device(robot);
 
-        rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-        etatCommRobot = status;
-        rt_mutex_release(&mutexEtat);
+	// Mise a jour de la variable etatCommRobot
+	rt_mutex_acquire(&mutexEtat, TM_INFINITE); // récupérer le mutex mutexEtat
+	etatCommRobot = status; // màj avec le status
+	rt_mutex_release(&mutexEtat); // libérer le mutex mutexEtat
 
-        if (status == STATUS_OK) {
-            status = robot->start_insecurely(robot);
-            if (status == STATUS_OK){
-                rt_printf("tconnect : Robot démarrer\n");
-            }
+        // Si le status est OK, on démarre le robot
+	if (status == STATUS_OK) {
+            	
+		status = robot->start_insecurely(robot); // sans watchdog
+		//status = robot->start(robot); // quand watchgod ok
+           	
+		// Si le status est OK, on démarre le watchdog et l'aquisition de la battery
+		if (status == STATUS_OK){
+
+		        rt_printf("tconnect : Robot démarré\n");
+
+			// Start aquisition de la batterie : envoi de l'évenement
+			rt_printf("tconnect : Libération du semaphore semStartGetBattery\n");
+			rt_sem_v(&semStartGetBattery);
+
+			// Start watchdof : envoi de l'évenement
+			rt_printf("tconnect : Libération du semaphore semStartWatchdog\n");
+			rt_sem_v(&semStartWatchdog);
+            	}
         }
 
         message = d_new_message();
@@ -111,10 +130,12 @@ void deplacer(void *arg) {
     int status = 1;
     int gauche;
     int droite;
+    int speed =0;
+    
     DMessage *message;
 
-    rt_printf("tmove : Debut de l'éxecution de periodique à 1s\n");
-    rt_task_set_periodic(NULL, TM_NOW, 1000000000);
+    rt_printf("tmove : Debut de l'éxecution de periodique à 500ms\n");
+    rt_task_set_periodic(NULL, TM_NOW, 500000000);
 
     while (1) {
         /* Attente de l'activation périodique */
@@ -127,26 +148,47 @@ void deplacer(void *arg) {
 
         if (status == STATUS_OK) {
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
+            speed=move->get_speed(move);
             switch (move->get_direction(move)) {
                 case DIRECTION_FORWARD:
-                    gauche = MOTEUR_ARRIERE_LENT;
-                    droite = MOTEUR_ARRIERE_LENT;
+                		if (speed<50){
+		                  gauche = MOTEUR_ARRIERE_LENT;
+		                  droite = MOTEUR_ARRIERE_LENT;
+		                }else {
+		                	gauche = MOTEUR_ARRIERE_RAPIDE;
+		                  droite = MOTEUR_ARRIERE_RAPIDE;
+		                }
                     break;
                 case DIRECTION_LEFT:
-                    gauche = MOTEUR_ARRIERE_LENT;
-                    droite = MOTEUR_AVANT_LENT;
+                		if (speed<50){
+		                  gauche = MOTEUR_ARRIERE_LENT;
+		                  droite = MOTEUR_AVANT_LENT;
+		                 }else {
+		                  gauche = MOTEUR_ARRIERE_RAPIDE;
+		                  droite = MOTEUR_AVANT_RAPIDE;
+		                 }
                     break;
                 case DIRECTION_RIGHT:
-                    gauche = MOTEUR_AVANT_LENT;
-                    droite = MOTEUR_ARRIERE_LENT;
+                		if (speed<50){
+		                  gauche = MOTEUR_AVANT_LENT;
+		                  droite = MOTEUR_ARRIERE_LENT;
+		                }else{
+		                	gauche = MOTEUR_AVANT_RAPIDE;
+		                  droite = MOTEUR_ARRIERE_RAPIDE;
+		                }
                     break;
                 case DIRECTION_STOP:
                     gauche = MOTEUR_STOP;
                     droite = MOTEUR_STOP;
                     break;
                 case DIRECTION_STRAIGHT:
+                	if (speed<50){
                     gauche = MOTEUR_AVANT_LENT;
                     droite = MOTEUR_AVANT_LENT;
+                  }else{
+                  	gauche = MOTEUR_AVANT_RAPIDE;
+                    droite = MOTEUR_AVANT_RAPIDE;
+                  }
                     break;
             }
             rt_mutex_release(&mutexMove);
@@ -197,7 +239,6 @@ void image(void *arg) {
 
 	camera = d_new_camera();
 	int err;
-	DImage *img=d_new_image();
 	DJpegimage *jpeg=d_new_jpegimage();
 	DMessage *message = d_new_message();
 	
@@ -218,8 +259,9 @@ void image(void *arg) {
   	d_camera_get_frame(camera,img);
   	rt_mutex_release(&mutexCamera);
   	
+  	rt_mutex_acquire(&mutexImage, TM_INFINITE);
   	d_jpegimage_compress(jpeg,img);
-  	
+  	rt_mutex_release(&mutexImage);
   	d_message_put_jpeg_image(message,jpeg);
   	
   	rt_mutex_acquire(&mutexServer, TM_INFINITE);
@@ -230,6 +272,7 @@ void image(void *arg) {
   }
 
 }
+
 
 
 
@@ -300,24 +343,72 @@ void mission_fct(void * arg) {
 
 
 
+/*
+ * Récupérer la batterie du robot périodiquement : toutes les 250 ms
+ * @param arg
+ * @author MANGEL
+ */
+void battery(void *arg) {
+	rt_printf("tBattery : Début d'acquisition de la batterie\n");
 
+	// Variables
+	int battery;
+	int err;
+	int status;
+	
+	// Attente du lancement de l'aquisition de la batterie
+	rt_printf("tBattery : Attente du semaphore semStartGetBattery\n");
+	err = rt_sem_p(&tBattery, TM_INFINITE);
+	rt_printf("tBattery : Récupération du semaphore semStartGetBattery\n");
 
+	// Définition du thread tBattery : T=250ms
+	rt_task_set_periodic(&tBattery, TM_NOW, 250000000);
 
+	// Création de la variable DBattery
+	DBattery *d_battery = d_new_battery();
 
+	// Aquisition périodique
+	while(1) {
+		// Attente de la période du thread
+		rt_task_wait_period(NULL);
+		
+		// Récupérer l'état de la batterie du robot
+		status = robot->get_vbat(robot, &battery);
 
+		// Mise a jour de la variable etatCommRobot
+		rt_mutex_acquire(&mutexEtat, TM_INFINITE); // récupérer le mutex mutexEtat
+		etatCommRobot = status; // màj avec le status
+		rt_mutex_release(&mutexEtat); // libérer le mutex mutexEtat
 
+		// Tester l'état de la connexion du robot
+		test_com_robot("battery");
 
+		// Si le status est OK, on transmet au moniteur
+		if(status = STATUS_OK) {
+			// Envoi de l'état de la batterie au moniteur
+			DMessage *d_message_battery = d_new_message(); // création du message
+			d_battery->set_level(d_battery, battery); // copie de l'état de la batterie dans la bonne variable
+			d_message_battery->put_battery_level(d_message_battery, d_battery); // placer l'état de la batterie dans le DMessage
+			err = serveur->send(serveur, d_message_battery); 
+			
+			// Test de la communication avec le moniteur
+			if(err < 0) {
+				// Mise a jour de la variable etatCommMoniteur
+				rt_mutex_acquire(&mutexEtat, TM_INFINITE); // récupérer le mutex mutexEtat
+				etatCommMoniteur = 1; // màj avec 1
+				rt_mutex_release(&mutexEtat); // libérer le mutex mutexEtat
+			}
+		}
+	}
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+ * Tester l'état de la communication avec le robot
+ * Test du compteur d'échec : s'il dépasse 3, il faut executer le restart
+ * @param fct nom de la fonction yaant appelé test_com_robot
+ * @ author MANGEL
+ */
+void test_com_robot(const char* fct) {
+	rt_printf("test_com_robot : la fonction appelante est %s\n", fct);
+}
 

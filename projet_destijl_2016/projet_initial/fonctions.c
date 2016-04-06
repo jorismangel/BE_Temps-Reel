@@ -102,10 +102,12 @@ void deplacer(void *arg) {
     int status = 1;
     int gauche;
     int droite;
+    int speed =0;
+    
     DMessage *message;
 
-    rt_printf("tmove : Debut de l'éxecution de periodique à 1s\n");
-    rt_task_set_periodic(NULL, TM_NOW, 1000000000);
+    rt_printf("tmove : Debut de l'éxecution de periodique à 500ms\n");
+    rt_task_set_periodic(NULL, TM_NOW, 500000000);
 
     while (1) {
         /* Attente de l'activation périodique */
@@ -118,26 +120,47 @@ void deplacer(void *arg) {
 
         if (status == STATUS_OK) {
             rt_mutex_acquire(&mutexMove, TM_INFINITE);
+            speed=move->get_speed(move);
             switch (move->get_direction(move)) {
                 case DIRECTION_FORWARD:
-                    gauche = MOTEUR_ARRIERE_LENT;
-                    droite = MOTEUR_ARRIERE_LENT;
+                		if (speed<50){
+		                  gauche = MOTEUR_ARRIERE_LENT;
+		                  droite = MOTEUR_ARRIERE_LENT;
+		                }else {
+		                	gauche = MOTEUR_ARRIERE_RAPIDE;
+		                  droite = MOTEUR_ARRIERE_RAPIDE;
+		                }
                     break;
                 case DIRECTION_LEFT:
-                    gauche = MOTEUR_ARRIERE_LENT;
-                    droite = MOTEUR_AVANT_LENT;
+                		if (speed<50){
+		                  gauche = MOTEUR_ARRIERE_LENT;
+		                  droite = MOTEUR_AVANT_LENT;
+		                 }else {
+		                  gauche = MOTEUR_ARRIERE_RAPIDE;
+		                  droite = MOTEUR_AVANT_RAPIDE;
+		                 }
                     break;
                 case DIRECTION_RIGHT:
-                    gauche = MOTEUR_AVANT_LENT;
-                    droite = MOTEUR_ARRIERE_LENT;
+                		if (speed<50){
+		                  gauche = MOTEUR_AVANT_LENT;
+		                  droite = MOTEUR_ARRIERE_LENT;
+		                }else{
+		                	gauche = MOTEUR_AVANT_RAPIDE;
+		                  droite = MOTEUR_ARRIERE_RAPIDE;
+		                }
                     break;
                 case DIRECTION_STOP:
                     gauche = MOTEUR_STOP;
                     droite = MOTEUR_STOP;
                     break;
                 case DIRECTION_STRAIGHT:
+                	if (speed<50){
                     gauche = MOTEUR_AVANT_LENT;
                     droite = MOTEUR_AVANT_LENT;
+                  }else{
+                  	gauche = MOTEUR_AVANT_RAPIDE;
+                    droite = MOTEUR_AVANT_RAPIDE;
+                  }
                     break;
             }
             rt_mutex_release(&mutexMove);

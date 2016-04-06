@@ -12,12 +12,13 @@ RT_TASK tServeur;
 RT_TASK tconnect;
 RT_TASK tmove;
 RT_TASK tenvoyer;
+RT_TASK tcamera;
+RT_TASK tMission;
 RT_TASK tWatchdog;
 RT_TASK tPosition;
 RT_TASK tBattery;
 RT_TASK tArena;
 RT_TASK tImage;
-RT_TASK tMission;
 
 //Definition des mutex 
 RT_MUTEX mutexEtat;
@@ -29,7 +30,9 @@ RT_MUTEX mutexCamera;
 RT_MUTEX mutexArena;
 RT_MUTEX mutexRobot;
 RT_MUTEX mutexServer;
+RT_MUTEX mutexMission;
 RT_MUTEX mutexImage;
+
 
 //Definition des semaphores
 RT_SEM semConnecterRobot;
@@ -40,11 +43,15 @@ RT_QUEUE queueMsgGUI;
 
 int etatCommMoniteur = 1;
 int etatCommRobot = 1;
+
 DRobot *robot;
 DMovement *move;
 DServer *serveur;
 DCamera *camera;
-DImage * img;
+DMission *mission;
+DArena *arena;
+DImage *img;
+
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial
@@ -53,7 +60,6 @@ int PRIORITY_TSERVEUR = 30;
 //int PRIORITY_TMOVE = 10;
 int PRIORITY_TENVOYER = 25;
 int PRIORITY_TCAMERA = 10;
- int PRIORITY_TWATCHDOG= 99;
 //Nos constantes de priorite
 int PRIORITY_TCONNECT = 80;
 int PRIORITY_TSEND= 70;
@@ -64,5 +70,5 @@ int PRIORITY_TARENA = 60;
 int PRIORITY_TIMAGE = 60;
 int PRIORITY_TPOSITION = 60;
 int PRIORITY_TBATTERY = 50;
-
+int PRIORITY_TWATCHDOG= 99;
 

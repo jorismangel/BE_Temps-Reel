@@ -1,31 +1,20 @@
 #include "fonctions.h"
+#include <math.h>
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size);
 
-void envoyer(void * arg) {
-    DMessage *msg;
-    int err;
-
-    while (1) {
-        rt_printf("tenvoyer : Attente d'un message\n");
-        if ((err = rt_queue_read(&queueMsgGUI, &msg, sizeof (DMessage), TM_INFINITE)) >= 0) {
-            rt_printf("tenvoyer : envoi d'un message au moniteur\n");
-            serveur->send(serveur, msg);
-            msg->free(msg);
-        } else {
-            rt_printf("Error msg queue write: %s\n", strerror(-err));
-        }
-    }
-}
-
-
+/*
+ * Connextion au robot
+ * @param arg
+ * @author ASHMAWY BOULANGER DIOP MANGEL
+ */
 void connecter(void * arg) {
     int status;
-    DMessage *message;
 
-    rt_printf("tconnect : Debut de l'exécution de tconnect\n");
+    rt_printf("tconnect : Debut de connexion au robot\n");
 
     while (1) {
+
 	// Attente de l'acquisition du semaphore semConnecterRobot
         rt_printf("tconnect : Attente du sémarphore semConnecterRobot\n");
         rt_sem_p(&semConnecterRobot, TM_INFINITE);
@@ -46,7 +35,7 @@ void connecter(void * arg) {
 		//status = robot->start(robot); // quand watchgod ok
            	
 		// Si le status est OK, on démarre le watchdog et l'aquisition de la battery
-		if (status == STATUS_OK){
+		if (status == STATUS_OK) {
 
 		        rt_printf("tconnect : Robot démarré\n");
 
@@ -60,60 +49,107 @@ void connecter(void * arg) {
             	}
         }
 
-        message = d_new_message();
-        message->put_state(message, status);
+        // Envoyer le message au moniteur : status de la connexion
+        DMessage *d_message = d_new_message();
+        d_message->put_state(d_message, status);
 
         rt_printf("tconnecter : Envoi message\n");
-        message->print(message, 100);
+        d_message->print(d_message, 100);
 
-        if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
-            message->free(message);
+        if (write_in_queue(&queueMsgGUI, d_message, sizeof (DMessage)) < 0) {
+            d_message->free(d_message);
         }
     }
 }
 
-void communiquer(void *arg) {
-    DMessage *msg = d_new_message();
-    int var1 = 1;
-    int num_msg = 0;
 
-    rt_printf("tserver : Début de l'exécution de serveur\n");
-    serveur->open(serveur, "8000");
-    rt_printf("tserver : Connexion\n");
 
-    rt_mutex_acquire(&mutexEtat, TM_INFINITE);
-    etatCommMoniteur = 0;
-    rt_mutex_release(&mutexEtat);
+/*
+ * Envoyer des messages au moniteur
+ * @param arg
+ * @author ASHMAWY BOULANGER DIOP MANGEL
+ */
+void envoyer(void * arg) {
+    DMessage *msg;
+    int err;
 
-    while (var1 > 0) {
-        rt_printf("tserver : Attente d'un message\n");
-        var1 = serveur->receive(serveur, msg);
-        num_msg++;
-        if (var1 > 0) {
-            switch (msg->get_type(msg)) {
-                case MESSAGE_TYPE_ACTION:
-                    rt_printf("tserver : Le message %d reçu est une action\n",
-                            num_msg);
-                    DAction *action = d_new_action();
-                    action->from_message(action, msg);
-                    switch (action->get_order(action)) {
-                        case ACTION_CONNECT_ROBOT:
-                            rt_printf("tserver : Action connecter robot\n");
-                            rt_sem_v(&semConnecterRobot);
-                            break;
-                    }
-                    break;
-                case MESSAGE_TYPE_MOVEMENT:
-                    rt_printf("tserver : Le message reçu %d est un mouvement\n",
-                            num_msg);
-                    rt_mutex_acquire(&mutexMove, TM_INFINITE);
-                    move->from_message(move, msg);
-                    move->print(move);
-                    rt_mutex_release(&mutexMove);
-                    break;
-            }
+    while (1) {
+        rt_printf("tenvoyer : Attente d'un message\n");
+        if ((err = rt_queue_read(&queueMsgGUI, &msg, sizeof (DMessage), TM_INFINITE)) >= 0) {
+            rt_printf("tenvoyer : envoi d'un message au moniteur\n");
+            serveur->send(serveur, msg);
+            msg->free(msg);
+        } else {
+            rt_printf("Error msg queue write: %s\n", strerror(-err));
         }
     }
+}
+
+
+
+
+
+/*
+ * Recevoir les ordres et messages du moniteur
+ * @param arg
+ * @author ASHMAWY BOULANGER DIOP MANGEL
+ */
+
+void communiquer(void *arg) {
+        // Variables
+        DMessage *msg = d_new_message();
+        int var1 = 1;
+        int num_msg = 0;
+
+        // Ouverture du serveur
+        rt_printf("tserver : Début de l'exécution de serveur\n");
+        serveur->open(serveur, "8000");
+        rt_printf("tserver : Connexion\n");
+
+        // Mise a jour de la variable etatCommMoniteur
+	rt_mutex_acquire(&mutexEtat, TM_INFINITE); // récupérer le mutex mutexEtat
+	etatCommMoniteur = 0;
+	rt_mutex_release(&mutexEtat); // libérer le mutex mutexEtat
+
+        // Récupération des messages
+        while (var1 > 0) {
+                rt_printf("tserver : Attente d'un message\n");
+                var1 = serveur->receive(serveur, msg);
+                num_msg++;
+                if (var1 > 0) {
+                        switch (msg->get_type(msg)) {
+                        case MESSAGE_TYPE_ACTION:
+                            rt_printf("tserver : Le message %d reçu est une action\n",
+                                    num_msg);
+                            DAction *action = d_new_action();
+                            action->from_message(action, msg);
+                            switch (action->get_order(action)) {
+                                case ACTION_CONNECT_ROBOT:
+                                    rt_printf("tserver : Action connecter robot\n");
+                                    rt_sem_v(&semConnecterRobot);
+                                    break;
+                            }
+                            break;
+                        case MESSAGE_TYPE_MOVEMENT:
+                            rt_printf("tserver : Le message reçu %d est un mouvement\n",
+                                    num_msg);
+                            rt_mutex_acquire(&mutexMove, TM_INFINITE);
+                            move->from_message(move, msg);
+                            move->print(move);
+                            rt_mutex_release(&mutexMove);
+                            break;
+                                                 case MESSAGE_TYPE_MISSION:
+                            rt_printf("tserver : Le message reçu %d est une mission\n",
+                                    num_msg);
+	                                          //instanciation et initialisation de la mission 
+				                          mission = d_new_mission();
+	                                                  //On recupere les informations du message de mission recu
+	                                                  d_mission_from_message(mission, msg);
+	                                                  rt_mutex_release(&mutexMission);
+                            break;
+                        }
+                }
+        }
 }
 
 void deplacer(void *arg) {
@@ -201,9 +237,9 @@ void deplacer(void *arg) {
         }
     }
 }
-//TODO
 
-void arena(void *arg) {
+
+void detectArena(void *arg) {
 
 
 
@@ -226,6 +262,8 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
 
 void image(void *arg) {
+
+	camera = d_new_camera();
 	int err;
 	DJpegimage *jpeg=d_new_jpegimage();
 	DMessage *message = d_new_message();
@@ -239,7 +277,7 @@ void image(void *arg) {
 	rt_mutex_release(&mutexCamera);
 	
 	rt_printf("tImage : Debut de l'éxecution de periodique à 600ms\n");
-  rt_task_set_periodic(NULL, TM_NOW, 600000000);
+   rt_task_set_periodic(&tImage, TM_NOW, 600000000);
   
   while(1){
   	rt_printf("tImage : Activation periodique\n");
@@ -257,17 +295,86 @@ void image(void *arg) {
   		rt_printf("echec envoie image au serveur\n");
   	}
   	rt_mutex_release(&mutexServer);
-  	
-  	
   }
+
 }
+
+
+
+
+void mission_fct(void * arg) {
+
+	 int id =0;
+	 DPosition *positionActuelle;
+	 DPosition *positionVoulue;
+	 int angle = 0;
+	 int direction = 0; //Sens horaire
+	 int range = 0; 
+	 int status = 0; 
+	 DMessage* message = d_new_message();
+	 
+	 while(1){
+	 rt_mutex_acquire(&mutexMission, TM_INFINITE);
+
+	 rt_printf("tserver : Début de l'exécution du thread tMission\n");
+	 
+	 //Je recupere le numero de la mission
+	 id = d_mission_get_id(mission); 
+
+	 //Je recupere la position a atteindre
+	 d_mission_get_position(mission, positionVoulue);
+	 //Je recupere la position actuelle
+	 positionActuelle = d_image_compute_robot_position(img,arena);
+	
+	 //Je calcule les écarts de position pour le futur deplacement
+	 angle = positionVoulue->orientation - positionActuelle->orientation;
+	 range = sqrt(pow(positionVoulue->x - positionActuelle->x, 2) + pow(positionVoulue->y - positionActuelle->y, 2));
+	 
+	 //Maintenant on rotate pour s'aligner avec la destination
+	 status = d_robot_turn(robot,angle,direction);
+	 if(status ==STATUS_OK)
+	 {
+		printf("Turn ok\n");
+	 }
+	 else
+	 {
+		printf("Error Turn\n");
+	 }
+	 //Puis on avance pour arriver à destination
+	 status = d_robot_move(robot,range);
+	 if(status ==STATUS_OK)
+	 {
+		printf("Move ok\n");
+	 }
+	 else
+	 {
+		printf("Error Move\n");
+	 }
+
+	 //Arrive a destination, envoie message de mission terminee
+	 rt_printf("Nous sommes arrives a destination\n");
+	 //On informe de la fin de la mission en envoyant un message 
+	 d_message_mission_terminate(message,id);
+	 status = d_server_send(serveur,message);
+
+	 //On garde le mutex bloquant, il sera debloque que lors de la reception d'une nouvelle demande de mission
+}
+}
+
+
+
+
+
+
+
 
 
 /*
  * Récupérer la batterie du robot périodiquement : toutes les 250 ms
  * @param arg
- * @author MANGEL
+ * @author ASHMAWY BOULANGER DIOP MANGEL
  */
+
 void battery(void *arg) {
 	rt_printf("tBattery : Début d'acquisition de la batterie\n");
 
@@ -278,7 +385,7 @@ void battery(void *arg) {
 	
 	// Attente du lancement de l'aquisition de la batterie
 	rt_printf("tBattery : Attente du semaphore semStartGetBattery\n");
-	err = rt_sem_p(&tBattery, TM_INFINITE);
+	err = rt_sem_p(&semStartGetBattery, TM_INFINITE);
 	rt_printf("tBattery : Récupération du semaphore semStartGetBattery\n");
 
 	// Définition du thread tBattery : T=250ms
@@ -291,6 +398,8 @@ void battery(void *arg) {
 	while(1) {
 		// Attente de la période du thread
 		rt_task_wait_period(NULL);
+
+                rt_printf("tBattery : Activation periodique\n");
 		
 		// Récupérer l'état de la batterie du robot
 		status = robot->get_vbat(robot, &battery);
@@ -302,14 +411,22 @@ void battery(void *arg) {
 
 		// Tester l'état de la connexion du robot
 		test_com_robot("battery");
+                rt_printf("tBattery : status=%d\n", status);
 
 		// Si le status est OK, on transmet au moniteur
-		if(status = STATUS_OK) {
+		if(status == STATUS_OK) {
 			// Envoi de l'état de la batterie au moniteur
-			DMessage *d_message_battery = d_new_message(); // création du message
+			DMessage *d_message = d_new_message(); // création du message
 			d_battery->set_level(d_battery, battery); // copie de l'état de la batterie dans la bonne variable
-			d_message_battery->put_battery_level(d_message_battery, d_battery); // placer l'état de la batterie dans le DMessage
-			err = serveur->send(serveur, d_message_battery); 
+			d_message->put_battery_level(d_message, d_battery); // placer l'état de la batterie dans le DMessage
+			
+                        rt_printf("tBattery : Envoi message\n");
+
+                        rt_mutex_acquire(&mutexServer, TM_INFINITE);
+                  	if(d_server_send(serveur, d_message)==-1){
+                  		rt_printf("echec envoie etat batterie au serveur\n");
+                  	}
+                  	rt_mutex_release(&mutexServer);
 			
 			// Test de la communication avec le moniteur
 			if(err < 0) {
@@ -322,12 +439,15 @@ void battery(void *arg) {
 	}
 }
 
+
+
 /*
  * Tester l'état de la communication avec le robot
  * Test du compteur d'échec : s'il dépasse 3, il faut executer le restart
  * @param fct nom de la fonction yaant appelé test_com_robot
- * @ author MANGEL
+ * @author ASHMAWY BOULANGER DIOP MANGEL
  */
 void test_com_robot(const char* fct) {
 	rt_printf("test_com_robot : la fonction appelante est %s\n", fct);
 }
+

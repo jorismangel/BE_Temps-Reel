@@ -15,6 +15,7 @@ extern RT_TASK tServeur;
 extern RT_TASK tconnect;
 extern RT_TASK tmove;
 extern RT_TASK tenvoyer;
+extern RT_TASK tMission;
 extern RT_TASK tImage;
 extern RT_TASK tWatchdog;
 extern RT_TASK tPosition;
@@ -24,12 +25,15 @@ extern RT_TASK tImage;
 extern RT_TASK tMission;
 
 
+
 /* @descripteurs des mutex */
 extern RT_MUTEX mutexEtat;
 extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexCamera;
 extern RT_MUTEX mutexServer;
+extern RT_MUTEX mutexMission;
 extern RT_MUTEX mutexImage;
+
 
 
 /* @descripteurs des sempahore */
@@ -47,7 +51,10 @@ extern DServer *serveur;
 extern DRobot *robot;
 extern DMovement *move;
 extern DCamera *camera;
-extern DImage * img;
+extern DMission *mission;
+extern DImage *img;
+extern DArena *arena;
+
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;
@@ -66,6 +73,7 @@ extern int PRIORITY_TARENA;
 extern int PRIORITY_TIMAGE;
 extern int PRIORITY_TPOSITION;
 extern int PRIORITY_TBATTERY;
+
 
 #endif	/* GLOBAL_H */
 

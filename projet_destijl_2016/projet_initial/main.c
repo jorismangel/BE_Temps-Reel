@@ -53,6 +53,7 @@ int main(int argc, char**argv) {
 }
 
 void initStruct(void) {
+
 	int err;
 
 	/*
@@ -89,6 +90,11 @@ void initStruct(void) {
 		exit(EXIT_FAILURE);
 	}
 
+	// mutexMission
+	if (err = rt_mutex_create(&mutexMission, NULL)) {
+		rt_printf("Error mutex create: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
 
 
 	/* 
@@ -204,6 +210,7 @@ void initStruct(void) {
 }
 
 void startTasks() {
+
 	int err;
 
 	// tconnect
@@ -223,6 +230,12 @@ void startTasks() {
 		rt_printf("Error task start tmove: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
+
+	// tMission
+	//if (err = rt_task_start(&tMission, &mission, NULL)) {
+ 	//	rt_printf("Error task start: %s\n", strerror(-err));
+        //	exit(EXIT_FAILURE);
+    	//}	
 
 	// tenvoyer
 	if (err = rt_task_start(&tenvoyer, &envoyer, NULL)) {
@@ -244,9 +257,10 @@ void startTasks() {
 }
 
 void deleteTasks() {
-    rt_task_delete(&tServeur);
-    rt_task_delete(&tconnect);
-    rt_task_delete(&tmove);
-    rt_task_delete(&tImage);
-    rt_task_delete(&tBattery);
+    	rt_task_delete(&tServeur);
+    	rt_task_delete(&tconnect);
+    	rt_task_delete(&tmove);
+    	rt_task_delete(&tImage);
+	rt_task_delete(&tMission);
+    	rt_task_delete(&tBattery);
 }

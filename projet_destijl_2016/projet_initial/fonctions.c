@@ -218,7 +218,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
 void image(void *arg) {
 	int err;
-	DImage *img=d_new_image();
+	img=d_new_image();
 	DJpegimage *jpeg=d_new_jpegimage();
 	DMessage *message = d_new_message();
 	

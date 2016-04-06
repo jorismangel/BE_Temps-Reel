@@ -29,7 +29,7 @@ RT_MUTEX mutexCamera;
 RT_MUTEX mutexArena;
 RT_MUTEX mutexRobot;
 RT_MUTEX mutexServer;
-
+RT_MUTEX mutexImage;
 
 //Definition des semaphores
 RT_SEM semConnecterRobot;

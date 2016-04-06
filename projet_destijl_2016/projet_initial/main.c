@@ -122,61 +122,61 @@ void initStruct(void) {
 	
 	// serveur
 	if (err = rt_task_create(&tServeur, NULL, 0, PRIORITY_TSERVEUR, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tServeur: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// connect
 	if (err = rt_task_create(&tconnect, NULL, 0, PRIORITY_TCONNECT, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tconnect: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// move
 	if (err = rt_task_create(&tmove, NULL, 0, PRIORITY_TMOVE, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tmove: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// envoyer
 	if (err = rt_task_create(&tenvoyer, NULL, 0, PRIORITY_TENVOYER, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tenvoyer: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// arena
 	if (err = rt_task_create(&tArena, NULL, 0, PRIORITY_TARENA, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task createt tArena: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// image
 	if (err = rt_task_create(&tImage, NULL, 0, PRIORITY_TIMAGE, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tImage: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// position
 	if (err = rt_task_create(&tPosition, NULL, 0, PRIORITY_TPOSITION, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tPosition: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// watchdog
 	if (err = rt_task_create(&tWatchdog, NULL, 0, PRIORITY_TWATCHDOG, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tWatchdog: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// mission
 	if (err = rt_task_create(&tMission, NULL, 0, PRIORITY_TMISSION, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tMission: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
 	// battery
 	if (err = rt_task_create(&tBattery, NULL, 0, PRIORITY_TBATTERY, 0)) {
-		rt_printf("Error task create: %s\n", strerror(-err));
+		rt_printf("Error task create tBattery: %s\n", strerror(-err));
 		exit(EXIT_FAILURE);
 	}
 
@@ -204,32 +204,43 @@ void initStruct(void) {
 }
 
 void startTasks() {
-    int err;
-    if (err = rt_task_start(&tconnect, &connecter, NULL)) {
-        rt_printf("Error task start tconnect: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
-    if (err = rt_task_start(&tServeur, &communiquer, NULL)) {
-        rt_printf("Error task start tServeur: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
-    if (err = rt_task_start(&tmove, &deplacer, NULL)) {
-        rt_printf("Error task start tmove: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
-    if (err = rt_task_start(&tenvoyer, &envoyer, NULL)) {
-        rt_printf("Error task start tenvoyer: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
-    if (err = rt_task_start(&tImage, &image, NULL)) {
-        rt_printf("Error task start tImage: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
-    if (err = rt_task_start(&tBattery, &battery, NULL)) {
-        rt_printf("Error task start tBattery: %s\n", strerror(-err));
-        exit(EXIT_FAILURE);
-    }
+	int err;
 
+	// tconnect
+	if (err = rt_task_start(&tconnect, &connecter, NULL)) {
+		rt_printf("Error task start tconnect: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
+
+	// tServeur
+	if (err = rt_task_start(&tServeur, &communiquer, NULL)) {
+		rt_printf("Error task start tServeur: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
+
+	// tmove
+	if (err = rt_task_start(&tmove, &deplacer, NULL)) {
+		rt_printf("Error task start tmove: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
+
+	// tenvoyer
+	if (err = rt_task_start(&tenvoyer, &envoyer, NULL)) {
+		rt_printf("Error task start tenvoyer: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
+
+	// tImage
+	if (err = rt_task_start(&tImage, &image, NULL)) {
+		rt_printf("Error task start tImage: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
+
+	// tBattery
+	if (err = rt_task_start(&tBattery, &battery, NULL)) {
+		rt_printf("Error task start tBattery: %s\n", strerror(-err));
+		exit(EXIT_FAILURE);
+	}
 }
 
 void deleteTasks() {

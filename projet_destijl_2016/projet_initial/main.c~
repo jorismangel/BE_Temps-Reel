@@ -138,7 +138,6 @@ void initStruct(void) {
 		exit(EXIT_FAILURE);
 	}
 
-<<<<<<< HEAD
 	// envoyer
 	if (err = rt_task_create(&tenvoyer, NULL, 0, PRIORITY_TENVOYER, 0)) {
 		rt_printf("Error task create: %s\n", strerror(-err));
@@ -202,12 +201,6 @@ void initStruct(void) {
 	move = d_new_movement();
 	serveur = d_new_server();
     	img = d_new_image();
-=======
-    /* Creation des structures globales du projet */
-    robot = d_new_robot();
-    move = d_new_movement();
-    serveur = d_new_server();
->>>>>>> 88667be45bda86cbb205b97d420f1567e9fb5801
 }
 
 void startTasks() {

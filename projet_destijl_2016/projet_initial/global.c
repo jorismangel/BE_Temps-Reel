@@ -35,6 +35,8 @@ RT_MUTEX mutexImage;
 RT_SEM semConnecterRobot;
 RT_SEM semStartGetBattery;
 RT_SEM semStartWatchdog;
+RT_SEM semStartDetectArena;
+RT_SEM semStartImage;
 
 RT_QUEUE queueMsgGUI;
 
@@ -45,6 +47,9 @@ DMovement *move;
 DServer *serveur;
 DCamera *camera;
 DImage * img;
+int nbcommrobot;
+DArena *arena ;
+DAction *action ;
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial

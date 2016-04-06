@@ -30,12 +30,15 @@ extern RT_MUTEX mutexMove;
 extern RT_MUTEX mutexCamera;
 extern RT_MUTEX mutexServer;
 extern RT_MUTEX mutexImage;
+extern RT_MUTEX mutexArena;
 
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
 extern RT_SEM semStartGetBattery;
 extern RT_SEM semStartWatchdog;
+extern RT_SEM semStartDetectArena;
+extern RT_SEM semStartImage;
 
 /* @descripteurs des files de messages */
 extern RT_QUEUE queueMsgGUI;
@@ -48,6 +51,9 @@ extern DRobot *robot;
 extern DMovement *move;
 extern DCamera *camera;
 extern DImage * img;
+extern int nbcommrobot;
+extern DArena *arena;
+extern DAction *action ;
 
 /* @constantes */
 extern int MSG_QUEUE_SIZE;

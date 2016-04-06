@@ -24,7 +24,7 @@ void connecter(void * arg) {
     DMessage *message;
 
     rt_printf("tconnect : Debut de l'exécution de tconnect\n");
-
+		nbcommrobot=0;
     while (1) {
 	// Attente de l'acquisition du semaphore semConnecterRobot
         rt_printf("tconnect : Attente du sémarphore semConnecterRobot\n");
@@ -33,7 +33,7 @@ void connecter(void * arg) {
 	// Ouverture de la communication avec le robot
         rt_printf("tconnect : Ouverture de la communication avec le robot\n");
         status = robot->open_device(robot);
-
+				nbcommrobot++;
 	// Mise a jour de la variable etatCommRobot
 	rt_mutex_acquire(&mutexEtat, TM_INFINITE); // récupérer le mutex mutexEtat
 	etatCommRobot = status; // màj avec le status
@@ -41,10 +41,10 @@ void connecter(void * arg) {
 
         // Si le status est OK, on démarre le robot
 	if (status == STATUS_OK) {
-            	
-		status = robot->start_insecurely(robot); // sans watchdog
-		//status = robot->start(robot); // quand watchgod ok
-           	
+    if (nbcommrobot<2){
+			status = robot->start_insecurely(robot); // sans watchdog
+			//status = robot->start(robot); // quand watchgod ok
+    }
 		// Si le status est OK, on démarre le watchdog et l'aquisition de la battery
 		if (status == STATUS_OK){
 
@@ -94,13 +94,26 @@ void communiquer(void *arg) {
                 case MESSAGE_TYPE_ACTION:
                     rt_printf("tserver : Le message %d reçu est une action\n",
                             num_msg);
-                    DAction *action = d_new_action();
+                    
                     action->from_message(action, msg);
                     switch (action->get_order(action)) {
                         case ACTION_CONNECT_ROBOT:
                             rt_printf("tserver : Action connecter robot\n");
                             rt_sem_v(&semConnecterRobot);
                             break;
+                        case ACTION_FIND_ARENA:
+                        		rt_printf("tserver : Action recherche arene\n");
+                        		rt_sem_v(&semStartDetectArena);
+                        		break;
+                        case ACTION_ARENA_IS_FOUND:
+                        		rt_printf("tserver : Action found arene\n");
+                        		rt_sem_v(&semStartDetectArena);
+                        		break;	
+                      	case ACTION_ARENA_FAILED:
+                      		rt_printf("tserver : Action recherche failed\n");
+                      		rt_sem_v(&semStartDetectArena);
+                      		break;
+                        		
                     }
                     break;
                 case MESSAGE_TYPE_MOVEMENT:
@@ -131,7 +144,6 @@ void deplacer(void *arg) {
         /* Attente de l'activation périodique */
         rt_task_wait_period(NULL);
         rt_printf("tmove : Activation périodique\n");
-
         rt_mutex_acquire(&mutexEtat, TM_INFINITE);
         status = etatCommRobot;
         rt_mutex_release(&mutexEtat);
@@ -197,16 +209,73 @@ void deplacer(void *arg) {
                 if (write_in_queue(&queueMsgGUI, message, sizeof (DMessage)) < 0) {
                     message->free(message);
                 }
+                rt_sem_v(&semConnecterRobot);
             }
         }
     }
 }
 //TODO
 
-void arena(void *arg) {
+void detect_arena(void *arg) {
+
+		DMessage *msg = d_new_message();
+    DArena *arn=d_new_arena();
+    DJpegimage *jpegImage = d_new_jpegimage();
 
 
-
+    int status = 0;
+    int var = 0;
+    int ordre = -1;
+    int JaiSem=0;
+    
+    while(1) {
+    		rt_sem_p(&semStartDetectArena, TM_INFINITE);
+    		if (!JaiSem){
+    			rt_sem_p(&semStartImage, TM_INFINITE);
+    			JaiSem=1;
+    		}
+    		switch(action->get_order(action)){
+    		case ACTION_FIND_ARENA:
+    		
+    						rt_printf("ACTION_FIND_ARENA\n");
+    						rt_mutex_acquire(&mutexCamera, TM_INFINITE);
+  							rt_mutex_acquire(&mutexImage, TM_INFINITE);
+								d_camera_get_frame(camera,img);
+								rt_mutex_release(&mutexCamera);
+								arn = d_image_compute_arena_position(img);
+								d_imageshop_draw_arena(img, arn);
+								//on compresse le message 
+								d_jpegimage_compress(jpegImage, img);
+								rt_mutex_release(&mutexImage);
+								d_message_put_jpeg_image(msg,jpegImage);
+								//on envoie un message
+								rt_mutex_acquire(&mutexServer, TM_INFINITE);
+						  	if((status=d_server_send(serveur,msg))==-1){
+						  		rt_printf("echec envoie image au serveur\n");
+						  	}
+								rt_mutex_release(&mutexServer);
+						
+								if(status!=-1) {
+									status = STATUS_OK;
+									rt_printf("message envoyé!\n");
+					 		 	}
+                break;
+            case ACTION_ARENA_IS_FOUND:
+            		rt_printf("ACTION_ARENA_IS_FOUND\n");
+    						rt_mutex_acquire(&mutexArena, TM_INFINITE);
+    						arena=arn;
+    						rt_mutex_release(&mutexArena);
+                rt_sem_v(&semStartImage);
+                JaiSem=0;
+                break;
+            case ACTION_ARENA_FAILED:
+            		rt_printf("ACTION_ARENA_FAILED\n");
+                rt_sem_v(&semStartImage);
+                JaiSem=0;
+            break;
+    		
+   }
+	}
 }
 
 int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
@@ -230,10 +299,8 @@ void image(void *arg) {
 	DJpegimage *jpeg=d_new_jpegimage();
 	DMessage *message = d_new_message();
 	
-	/*initialisation de la camera*/
+
 	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
-	camera = d_new_camera();
-	
 	/*ouverture de la webcam*/
 	d_camera_open(camera);
 	rt_mutex_release(&mutexCamera);
@@ -242,12 +309,14 @@ void image(void *arg) {
   rt_task_set_periodic(NULL, TM_NOW, 600000000);
   
   while(1){
+  	rt_sem_p(&semStartImage, TM_INFINITE);
   	rt_printf("tImage : Activation periodique\n");
   	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
+  	rt_mutex_acquire(&mutexImage, TM_INFINITE);
   	d_camera_get_frame(camera,img);
   	rt_mutex_release(&mutexCamera);
   	
-  	rt_mutex_acquire(&mutexImage, TM_INFINITE);
+  	
   	d_jpegimage_compress(jpeg,img);
   	rt_mutex_release(&mutexImage);
   	d_message_put_jpeg_image(message,jpeg);
@@ -258,7 +327,7 @@ void image(void *arg) {
   	}
   	rt_mutex_release(&mutexServer);
   	
-  	
+  	rt_sem_v(&semStartImage);
   }
 }
 
@@ -268,6 +337,8 @@ void image(void *arg) {
  * @param arg
  * @author MANGEL
  */
+ 
+ 
 void battery(void *arg) {
 	rt_printf("tBattery : Début d'acquisition de la batterie\n");
 
@@ -275,7 +346,7 @@ void battery(void *arg) {
 	int battery;
 	int err;
 	int status;
-	
+
 	// Attente du lancement de l'aquisition de la batterie
 	rt_printf("tBattery : Attente du semaphore semStartGetBattery\n");
 	err = rt_sem_p(&tBattery, TM_INFINITE);
@@ -321,6 +392,9 @@ void battery(void *arg) {
 		}
 	}
 }
+
+
+
 
 /*
  * Tester l'état de la communication avec le robot

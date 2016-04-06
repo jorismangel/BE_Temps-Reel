@@ -34,6 +34,8 @@ extern RT_MUTEX mutexImage;
 
 /* @descripteurs des sempahore */
 extern RT_SEM semConnecterRobot;
+extern RT_SEM semStartGetBattery;
+extern RT_SEM semStartWatchdog;
 
 /* @descripteurs des files de messages */
 extern RT_QUEUE queueMsgGUI;

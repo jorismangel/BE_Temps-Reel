@@ -31,9 +31,10 @@ RT_MUTEX mutexRobot;
 RT_MUTEX mutexServer;
 RT_MUTEX mutexImage;
 
-
-//Definition des mutex
+//Definition des semaphores
 RT_SEM semConnecterRobot;
+RT_SEM semStartGetBattery;
+RT_SEM semStartWatchdog;
 
 RT_QUEUE queueMsgGUI;
 

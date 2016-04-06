@@ -38,7 +38,11 @@ void connecter(void * arg) {
         if (status == STATUS_OK) {
             status = robot->start_insecurely(robot);
             if (status == STATUS_OK){
-                rt_printf("tconnect : Robot démarrer\n");
+		// Connexion au robot ok
+                rt_printf("tconnect : Robot démarré\n");
+
+		// Aquisition de la batterie
+		rt_sem_v(&semStart
             }
         }
 
@@ -219,4 +223,21 @@ void image(void *arg) {
   	
   	
   }
+}
+
+
+/*
+ * Récupérer la batterie du robot périodiquement : toutes les 250 ms
+ * @param arg
+ * @author MANGEL
+ */
+void battery(void *arg) {
+	rt_print("tBattery : Début d'acquisition de la batterie\n");
+
+	// Variables
+	int battery;
+	int err;
+	
+	// Attente de l'évennement 
+
 }

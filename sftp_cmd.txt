@@ -1,2 +1,10 @@
 cd tp_trs
+<<<<<<< HEAD
 put ./projet_destijl_2016/projet_initial/robot
+=======
+<<<<<<< HEAD
+put ./projet_destijl_2016/robot
+=======
+put robot
+>>>>>>> b7e4f5cdf5cb5b291ac40dd9a6e7b6c45bb24ce5
+>>>>>>> a777ee415d9f4c37b6ef468896e0aed83b629905

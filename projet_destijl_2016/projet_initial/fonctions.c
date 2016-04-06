@@ -99,6 +99,7 @@ void communiquer(void *arg) {
 	 					  mission = d_new_mission();
 						  //On recupere les informations du message de mission recu
 						  d_mission_from_message(mission, msg);
+						  debloque mutex
                     break;
             }
         }
@@ -193,7 +194,7 @@ int write_in_queue(RT_QUEUE *msgQueue, void * data, int size) {
 
 void image(void *arg) {
 
-	if (camera = d_new_camera() == NULL) {
+	camera = d_new_camera();
 	int err;
 	DImage *img=d_new_image();
 	DJpegimage *jpeg=d_new_jpegimage();
@@ -211,6 +212,7 @@ void image(void *arg) {
   rt_task_set_periodic(NULL, TM_NOW, 600000000);
   
   while(1){
+  	rt_printf("tImage : Activation periodique\n");
   	rt_mutex_acquire(&mutexCamera, TM_INFINITE);
   	d_camera_get_frame(camera,img);
   	rt_mutex_release(&mutexCamera);
@@ -229,6 +231,7 @@ void image(void *arg) {
 }
 
 
+
 void mission(void * arg) {
 
 	 int id =0;
@@ -237,6 +240,9 @@ void mission(void * arg) {
     int droite;
 	 int var = 0;
 	 DMessage* message;
+	 
+	 while(1){
+	 bloque mutex
 
 	 rt_printf("tserver : Début de l'exécution du thread tMission\n");
 	 
@@ -264,9 +270,12 @@ void mission(void * arg) {
 	 //Arrive a destination, envoie message de mission terminee
 	 rt_printf("Nous sommes arrives a destination\n");
 	 
-	 message = d_new_message(void);
+	 message = d_new_message();
 	 d_message_mission_terminate(message, id);
 	 var = d_server_send(serveur, message);
+
+
+}
 }
 
 

@@ -31,6 +31,7 @@ RT_MUTEX mutexCamera;
 RT_MUTEX mutexArena;
 RT_MUTEX mutexRobot;
 RT_MUTEX mutexServer;
+RT_MUTEX mutexMission;
 
 
 
@@ -46,7 +47,6 @@ DMovement *move;
 DServer *serveur;
 DCamera *camera;
 DMission *mission;
-
 
 int MSG_QUEUE_SIZE = 10;
 //Valeur du projet initial
